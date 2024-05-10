@@ -1,0 +1,70 @@
+'use client';
+import { api } from '@/convex/_generated/api';
+import { useMutation, useQuery } from 'convex/react';
+import { useEffect, useState } from 'react';
+import { Heart, SquareArrowRight, ThumbsUp } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Id } from '@/convex/_generated/dataModel';
+import { cn } from '@/lib/utils';
+import { Hint } from '@/components/hint';
+import { Button } from '@/components/ui/button';
+import { PictureCard } from './_components/pictureCard';
+
+const Home = () => {
+  const store = useMutation(api.users.store);
+  const pictureList = useQuery(api.pictures.list);
+
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    store({});
+  }, [store]);
+
+  const toggleShowFavorites = () => {
+    setShowFavorites(!showFavorites);
+  };
+
+  if (pictureList === undefined) {
+    return <div>Loading...</div>;
+  }
+
+  const filteredPictureList = showFavorites
+    ? pictureList?.filter((file) => file.favorite)
+    : pictureList;
+
+  return (
+    <div className="min-h-full bg-gradient-to-br from-slate-900 to-slate-900 text-white">
+      <div className="max-w mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="flex w-full justify-between px-8">
+          <h1 className="text-4xl font-bold mb-8">Pet Pictures</h1>
+
+          <button
+            onClick={toggleShowFavorites}
+            className="transform transition hover:scale-125 active:scale-150 ml-10"
+          >
+            <Hint
+              label="Show Favorite Pictures"
+              side="top"
+              align="center"
+              sideOffset={5}
+            >
+              <Heart
+                size={30}
+                className={cn('text-white', showFavorites && 'fill-red-600')}
+              />
+            </Hint>
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filteredPictureList?.map((file) => (
+            <PictureCard key={file._id} file={file} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Home;
