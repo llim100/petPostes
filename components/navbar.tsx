@@ -20,6 +20,9 @@ export const Navbar = () => {
           <Link href="/" className="text-white font-bold text-xl pl-1">
             petPoste
           </Link>
+          <Link href="/test" className="text-white font-bold text-xl pl-1">
+            test
+          </Link>
         </div>
 
         <div className="flex items-center pr-8">
