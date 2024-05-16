@@ -17,6 +17,7 @@ const Test = () => {
               width={200}
               height={200}
             />
+            <h1>{pet.pictureUrl}</h1>
           </div>
         ))}
     </div>
