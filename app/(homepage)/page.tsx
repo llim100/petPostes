@@ -38,7 +38,7 @@ const Home = () => {
     <div className="min-h-full bg-gradient-to-br from-slate-900 to-slate-900 text-white">
       <div className="max-w mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="flex w-full justify-between px-8">
-          <h1 className="text-4xl font-bold mb-8">Pet Pictures</h1>
+          <h1 className="text-4xl font-bold mb-2">Pet Pictures</h1>
 
           <button
             onClick={toggleShowFavorites}

@@ -31,10 +31,12 @@ type EditPostProps = {
 };
 
 const EditPost = ({ params }: EditPostProps) => {
-  const picture = useQuery(api.pictures.get, {
-    picId: params.postID,
-  }) as FileWithUrls;
-  const id = params.postID;
+  const id = params?.postID;
+  const picture = useQuery(
+    api.pictures.get,
+    id ? { picId: id } : 'skip'
+  ) as FileWithUrls;
+
   const isFavorite = useQuery(api.pictures.getFavorite, { id });
   const favorite = useMutation(api.pictures.favorite);
   const unfavorite = useMutation(api.pictures.unfavorite);

@@ -89,12 +89,19 @@ export const get = query({
     const owner = await ctx.db.get(file.ownerId);
     const isOwner = user._id === file.ownerId;
 
+    const likes = await ctx.db
+      .query('likes')
+      .withIndex('by_pictureId', (q) => q.eq('pictureId', file._id))
+      .collect();
+    const likeCount = likes.length;
+
     return {
       ...file,
       pictureUrl,
       owner,
       isOwner,
       favorite: favorite ? true : false,
+      likeCount,
     } as FileWithUrls;
   },
 });
