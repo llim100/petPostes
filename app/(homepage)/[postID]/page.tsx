@@ -55,6 +55,10 @@ const EditPost = ({ params }: EditPostProps) => {
     like({ id });
   };
 
+  if (picture === undefined) {
+    return <div>Loading ...</div>;
+  }
+
   return (
     <div className="min-h-min bg-gradient-to-br from-slate-900 to-slate-900 text-white">
       <div className="max-w mx-auto py-12 px-4 sm:px-6 lg:px-8">
