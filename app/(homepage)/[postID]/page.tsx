@@ -72,7 +72,7 @@ const EditPost = ({ params }: EditPostProps) => {
           <div className="flex w-full justify-between px-8">
             <h1 className="text-4xl font-bold mb-8">Edit this post</h1>
 
-            <Link href="/" className="pr-10">
+            <Link href="/petposte" className="pr-10">
               <Hint
                 label="back to main screen"
                 side="top"

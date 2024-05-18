@@ -17,7 +17,7 @@ export const Navbar = () => {
         <div className="flex justify-items-start gap-0">
           <div className="text-white font-bold text-xl">4E</div>
           <HeartPulse className="text-white h-6 w-6" />
-          <Link href="/" className="text-white font-bold text-xl pl-1">
+          <Link href="/petposte" className="text-white font-bold text-xl pl-1">
             petPoste
           </Link>
           <Link
