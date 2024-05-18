@@ -25,6 +25,7 @@ import { Comments } from '../_components/comments';
 
 import { FileWithUrls } from '@/types';
 import { AddComment } from '../_components/add-comment';
+import { useRouter } from 'next/navigation';
 
 type EditPostProps = {
   params: { postID: Id<'pictures'> };
@@ -42,6 +43,7 @@ const EditPost = ({ params }: EditPostProps) => {
   const unfavorite = useMutation(api.pictures.unfavorite);
   const isLiked = useQuery(api.pictures.getLike, { id });
   const like = useMutation(api.pictures.like);
+  const router = useRouter();
 
   const handleFavorite = () => {
     if (isFavorite) {
@@ -57,6 +59,10 @@ const EditPost = ({ params }: EditPostProps) => {
 
   if (picture === undefined) {
     return <div>Loading ...</div>;
+  }
+
+  if (picture === null) {
+    router.push('/');
   }
 
   return (
@@ -84,7 +90,7 @@ const EditPost = ({ params }: EditPostProps) => {
             <AspectRatio ratio={1 / 1}>
               <Image
                 src={picture?.pictureUrl!}
-                alt="logo"
+                alt="pet picture"
                 objectFit="contain"
                 fill
               />

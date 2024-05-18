@@ -1,5 +1,6 @@
 import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
+import { CommentWithAuthor, CommentsWithAuthor } from '../types';
 
 export const add = mutation({
   args: { pictureId: v.id('pictures'), content: v.string() },
@@ -51,7 +52,7 @@ export const list = query({
       })
     );
 
-    return commentsWithAuthors;
+    return commentsWithAuthors as CommentsWithAuthor;
   },
 });
 

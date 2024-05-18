@@ -7,3 +7,6 @@ export type FileWithUrls = Doc<'pictures'> & {
   favorite: boolean;
   likeCount: number;
 };
+
+export type CommentWithAuthor = Doc<'comments'> & { author: Doc<'users'> };
+export type CommentsWithAuthor = Array<CommentWithAuthor>;
