@@ -8,7 +8,6 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { CommentItem } from './comment-item';
 import { CommentsWithAuthor } from '@/types';
-import CommentItemTestPage from './comment-item-test';
 
 interface CommentsProps {
   picture: Doc<'pictures'> & {
