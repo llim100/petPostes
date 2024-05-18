@@ -9,7 +9,8 @@ import { Id } from '@/convex/_generated/dataModel';
 import { cn } from '@/lib/utils';
 import { Hint } from '@/components/hint';
 import { Button } from '@/components/ui/button';
-import { PictureCard } from './_components/pictureCard';
+import { PictureCard } from '../_components/pictureCard';
+import { useRouter } from 'next/navigation';
 
 const Home = () => {
   const store = useMutation(api.users.store);
@@ -17,10 +18,19 @@ const Home = () => {
 
   const [showFavorites, setShowFavorites] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     store({});
   }, [store]);
+
+  if (pictureList === undefined) {
+    return <div>Loading ...</div>;
+  }
+
+  if (pictureList === null) {
+    router.push('/');
+  }
 
   const toggleShowFavorites = () => {
     setShowFavorites(!showFavorites);
