@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'petPoste',
   description: 'connected pet pictures',
-  icons: { icon: [{ rel: 'icon', url: '/logo.svg', href: '/logo.svg' }] },
+  icons: { icon: [{ rel: 'icon', url: '/logo.ico', href: '/logo.ico' }] },
 };
 
 export default function RootLayout({

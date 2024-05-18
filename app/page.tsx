@@ -17,27 +17,26 @@ const LandingPage = () => {
       <div className="mx-auto pt-36 w-full py-8 min-h-fit">
         <div className="text-center">
           <Image
-            src="/logo.ico"
+            src="/logo.svg"
             width={200}
             height={200}
             alt="file drive logo"
             className="inline-block mb-8"
           />
+          <div className="flex justify-center">
+            <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl w-2/3 ">
+              Upload and share your pet pictures with your co-workers
+            </h1>
+          </div>
 
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-            Upload and share your pet pictures{' '}
-          </h1>
-          <br></br>
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-            with your co-workers
-          </h1>
-          <p className="mt-6 text-lg leading-8 text-slate-700">
+          <p className="mt-6 text-lg leading-8 text-slate-900">
             Sign-in and start connecting with everyone.
           </p>
+
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link
               href="/petposte"
-              className="rounded-md bg-slate-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="rounded-md bg-slate-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-700"
             >
               Get started
             </Link>
