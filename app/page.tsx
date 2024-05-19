@@ -1,10 +1,11 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const LandingPage = () => {
   return (
-    <div className="bg-transparent relative backdrop:saturate-300">
-      <div className="relative isolate -z-10 min-h-fit w-full">
+    <div className="bg-transparent">
+      <div className="relative  -z-10 min-h-fit w-full">
         <div className="absolute inset-x-0 w-full h-screen overflow-clip opacity-70 blur-md">
           <Image
             src="doggie3.png"
@@ -20,8 +21,8 @@ const LandingPage = () => {
             src="/logo.svg"
             width={200}
             height={200}
-            alt="file drive logo"
-            className="inline-block mb-8"
+            alt="pet logo"
+            className="inline mb-8"
           />
           <div className="flex justify-center">
             <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl w-2/3 ">

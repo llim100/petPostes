@@ -1,10 +1,15 @@
-import { Navbar } from '@/components/navbar';
+'use client';
 
-interface ChatLayoutProps {
+import { Navbar } from '@/components/navbar';
+import { Spinner } from '@/components/spinner';
+// import { useConvexAuth } from "convex/react";
+// import { redirect } from "next/navigation";
+
+interface MainLayoutProps {
   children: React.ReactNode;
 }
 
-export default function ChatLayout({ children }: ChatLayoutProps) {
+export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="bg-slate-950">
       <Navbar />

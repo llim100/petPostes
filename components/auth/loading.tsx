@@ -1,9 +1,10 @@
 import Image from 'next/image';
+import { Spinner } from '../spinner';
 
 export const Loading = () => {
   return (
-    <main className="flex w-full h-full items-center justify-center bg-white">
-      <Image src={'/logo.svg'} alt="logo" width={200} height={200} />
+    <main className="w-full bg-white grid h-screen place-items-center">
+      <Spinner size="icon" />
     </main>
   );
 };
