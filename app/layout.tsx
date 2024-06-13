@@ -9,8 +9,8 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'petPoste',
-  description: 'connected pet pictures',
-  // icons: { icon: [{ rel: 'icon', href: '/favicon.ico' }] },
+  description: 'pet picture sharing platform for nurses',
+  icons: { icon: [{ rel: 'icon', url: 'logo.svg', href: '/favicon.ico' }] },
 };
 
 export default function RootLayout({

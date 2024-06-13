@@ -11,10 +11,20 @@ import { Hint } from '@/components/hint';
 import { Button } from '@/components/ui/button';
 import { PictureCard } from '../_components/pictureCard';
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
-const Home = () => {
+interface HomePageProps {
+  searchParams: {
+    q?: string;
+  };
+}
+
+const Home = ({ searchParams: { q } }: HomePageProps) => {
+  const searchParams = useSearchParams();
+  const search = searchParams.get('q');
   const store = useMutation(api.users.store);
   const pictureList = useQuery(api.pictures.list);
+  const testList = useQuery(api.pictures.search, { search: q as string });
 
   const [showFavorites, setShowFavorites] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -73,6 +83,9 @@ const Home = () => {
           ))}
         </div>
       </div>
+      <h1>{q}</h1>
+      <p>--------</p>
+      <h1>{JSON.stringify(testList)}</h1>
     </div>
   );
 };

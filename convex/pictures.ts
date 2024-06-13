@@ -1,6 +1,12 @@
 import { ConvexError, v } from 'convex/values';
 import { mutation, query } from './_generated/server';
 import { FileWithUrls } from '../types/index';
+import {
+  getOneFromOrThrow,
+  getOneFrom,
+  getManyVia,
+  getManyFrom,
+} from 'convex-helpers/server/relationships';
 
 export const list = query({
   args: {},
@@ -12,34 +18,69 @@ export const list = query({
 
     return Promise.all(
       pictures.map(async (picture) => {
-        const pictureUrl = await ctx.storage.getUrl(picture.picStorageId);
-        let imageUrl: string | null = null;
+        const pictureUrl =
+          (await ctx.storage.getUrl(picture.picStorageId)) ?? '';
+        // let imageUrl: string | null = null;
 
-        const user = await ctx.db
-          .query('users')
-          .withIndex('by_token', (q) =>
-            q.eq('tokenIdentifier', identity.tokenIdentifier)
-          )
-          .unique();
+        // const user = await ctx.db
+        //   .query('users')
+        //   .withIndex('by_token', (q) =>
+        //     q.eq('tokenIdentifier', identity.tokenIdentifier)
+        //   )
+        //   .unique();
 
+        // if (user === null) {
+        //   throw new ConvexError("User doesn't exist in the database");
+        // }
+
+        const owner = await ctx.db.get(picture.ownerId);
+
+        if (owner === null) {
+          throw new ConvexError("User doesn't exist in the database");
+        }
+
+        const user = await getOneFrom(
+          ctx.db,
+          'users',
+          'by_token',
+          identity.tokenIdentifier,
+          'tokenIdentifier'
+        );
         if (user === null) {
           throw new ConvexError("User doesn't exist in the database");
         }
 
-        const favorite = await ctx.db
+        const existingFavorite = await ctx.db
           .query('userFavorites')
           .withIndex('by_userId_pictureId', (q) =>
             q.eq('userId', user._id).eq('pictureId', picture._id)
           )
           .unique();
 
-        const owner = await ctx.db.get(picture.ownerId);
-        const isOwner = user._id === picture.ownerId;
+        // const usersFavorites = await getManyVia(
+        //   ctx.db,
+        //   'userFavorites',
+        //   'userId',
+        //   'by_pictureId',
+        //   picture._id
+        // );
 
-        const likes = await ctx.db
-          .query('likes')
-          .withIndex('by_pictureId', (q) => q.eq('pictureId', picture._id))
-          .collect();
+        // const owner = await ctx.db.get(picture.ownerId);
+        const isOwner = user?._id === owner._id;
+
+        // const likes = await ctx.db
+        //   .query('likes')
+        //   .withIndex('by_pictureId', (q) => q.eq('pictureId', picture._id))
+        //   .collect();
+
+        const likes = await getManyFrom(
+          ctx.db,
+          'likes',
+          'by_pictureId',
+          picture._id,
+          'pictureId'
+        );
+
         const likeCount = likes.length;
 
         return {
@@ -47,7 +88,7 @@ export const list = query({
           pictureUrl,
           owner,
           isOwner,
-          favorite: favorite ? true : false,
+          favorite: existingFavorite ? true : false,
           likeCount,
         } as FileWithUrls;
       })
@@ -67,21 +108,31 @@ export const get = query({
     const pictureUrl = await ctx.storage.getUrl(file.picStorageId);
     // let imageUrl: string | null = null;
 
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_token', (q) =>
-        q.eq('tokenIdentifier', identity.tokenIdentifier)
-      )
-      .unique();
+    // const user = await ctx.db
+    //   .query('users')
+    //   .withIndex('by_token', (q) =>
+    //     q.eq('tokenIdentifier', identity.tokenIdentifier)
+    //   )
+    //   .unique();
 
+    // if (user === null) {
+    //   throw new ConvexError("User doesn't exist in the database");
+    // }
+    const user = await getOneFrom(
+      ctx.db,
+      'users',
+      'by_token',
+      identity.tokenIdentifier,
+      'tokenIdentifier'
+    );
     if (user === null) {
       throw new ConvexError("User doesn't exist in the database");
     }
 
-    const favorite = await ctx.db
+    const existingFavorite = await ctx.db
       .query('userFavorites')
       .withIndex('by_userId_pictureId', (q) =>
-        q.eq('userId', user._id).eq('pictureId', file._id)
+        q.eq('userId', user._id).eq('pictureId', args.picId)
       )
       .unique();
 
@@ -100,7 +151,7 @@ export const get = query({
       pictureUrl,
       owner,
       isOwner,
-      favorite: favorite ? true : false,
+      favorite: existingFavorite ? true : false,
       likeCount,
     } as FileWithUrls;
   },
@@ -188,13 +239,21 @@ export const favorite = mutation({
     if (!picture) {
       throw new Error('File not found');
     }
-
-    const userId = picture.ownerId;
+    const user = await getOneFrom(
+      ctx.db,
+      'users',
+      'by_token',
+      identity.tokenIdentifier,
+      'tokenIdentifier'
+    );
+    if (user === null) {
+      throw new ConvexError("User doesn't exist in the database");
+    }
 
     const existingFavorite = await ctx.db
       .query('userFavorites')
       .withIndex('by_userId_pictureId', (q) =>
-        q.eq('userId', userId).eq('pictureId', picture._id)
+        q.eq('userId', user._id).eq('pictureId', picture._id)
       )
       .unique();
 
@@ -203,7 +262,7 @@ export const favorite = mutation({
     }
 
     await ctx.db.insert('userFavorites', {
-      userId,
+      userId: user._id,
       pictureId: picture._id,
     });
 
@@ -226,12 +285,21 @@ export const unfavorite = mutation({
       throw new Error('File not found');
     }
 
-    const userId = picture.ownerId;
+    const user = await getOneFrom(
+      ctx.db,
+      'users',
+      'by_token',
+      identity.tokenIdentifier,
+      'tokenIdentifier'
+    );
+    if (user === null) {
+      throw new ConvexError("User doesn't exist in the database");
+    }
 
     const existingFavorite = await ctx.db
       .query('userFavorites')
       .withIndex('by_userId_pictureId', (q) =>
-        q.eq('userId', userId).eq('pictureId', picture._id)
+        q.eq('userId', user._id).eq('pictureId', picture._id)
       )
       .unique();
 
@@ -381,5 +449,16 @@ export const updateTitle = mutation({
     });
 
     return picture;
+  },
+});
+
+export const search = query({
+  args: { search: v.optional(v.string()) },
+  async handler({ db }, { search }) {
+    const results = db
+      .query('pictures')
+      .withSearchIndex('search_title', (q) => q.search('title', search || ''))
+      .take(10);
+    return results;
   },
 });

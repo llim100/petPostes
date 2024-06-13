@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { Spinner } from '../spinner';
 
 export const Loading = () => {

@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { favorite } from '@/convex/pictures';
 import { TrashDialog } from '../_components/trash-dialog';
 import { EditTitleDialog } from '../_components/edit-title-dialog';
+import { EditTitle } from '../_components/edit-title';
 //import {Comments} from '../_components/comments';
 import { Comments } from '../_components/comments';
 
@@ -99,8 +100,10 @@ const EditPost = ({ params }: EditPostProps) => {
           <div>
             <div className="flex items-center justify-between p-4">
               <div className="flex justify-start gap-x-0">
-                <h1 className="font-bold text-xl">{picture?.title}</h1>
-                {picture?.isOwner && <EditTitleDialog picture={picture} />}
+                {/* <h1 className="font-bold text-xl">{picture?.title}</h1> */}
+                {picture?.isOwner && (
+                  <EditTitle id={id} pictureTitle={picture.title} />
+                )}
               </div>
               <div className="flex flex-row justify-end">
                 <AddComment pictureId={id} />

@@ -6,11 +6,13 @@ import '@xixixao/uploadstuff/react/styles.css';
 import { api } from '../convex/_generated/api';
 import { useState } from 'react';
 import { Id } from '@/convex/_generated/dataModel';
+import { useRouter } from 'next/navigation';
 
 export function UploadArea() {
   const [picId, setPicId] = useState<Id<'pictures'> | null>(null);
   const [title, setTitle] = useState<string>('');
   const [category, setCategory] = useState<string>('');
+  const router = useRouter();
 
   const generateUploadUrl = useMutation(api.pictures.generateUploadUrl);
   const savePictureStorageId = useMutation(api.pictures.savePictureStorageId);
@@ -32,6 +34,7 @@ export function UploadArea() {
     setPicId(id);
     setTitle('');
     setCategory('');
+    // router.push('/petposte');
   };
 
   return (

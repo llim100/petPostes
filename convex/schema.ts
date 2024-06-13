@@ -16,11 +16,12 @@ export default defineSchema({
   })
     .index('by_ownerId', ['ownerId'])
     .index('by_category', ['category'])
-    .index('by_title', ['title']),
+    .searchIndex('search_title', { searchField: 'title' }),
   comments: defineTable({
     pictureId: v.id('pictures'),
     content: v.string(),
     authorId: v.id('users'),
+    isUserAuthor: v.optional(v.boolean()),
   }).index('by_pictureId', ['pictureId']),
   likes: defineTable({
     pictureId: v.id('pictures'),
