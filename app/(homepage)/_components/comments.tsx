@@ -28,7 +28,7 @@ export const Comments = ({ picture }: CommentsProps) => {
       <div className="p-4">
         <h4 className="mb-4 text-sm font-medium leading-none">Comments</h4>
         {comments?.map((comment) => (
-          <CommentItem key={comment._id} comment={comment} />
+          <CommentItem key={comment._id} comment={comment} id={comment._id} />
         ))}
       </div>
       <ScrollBar orientation="vertical" />
