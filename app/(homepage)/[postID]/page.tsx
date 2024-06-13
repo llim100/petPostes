@@ -19,7 +19,7 @@ import { Hint } from '@/components/hint';
 import { cn } from '@/lib/utils';
 import { favorite } from '@/convex/pictures';
 import { TrashDialog } from '../_components/trash-dialog';
-import { EditTitleDialog } from '../_components/edit-title-dialog';
+
 import { EditTitle } from '../_components/edit-title';
 //import {Comments} from '../_components/comments';
 import { Comments } from '../_components/comments';
