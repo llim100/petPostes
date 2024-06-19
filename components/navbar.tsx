@@ -8,7 +8,7 @@ import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, ChangeEvent } from 'react';
 
-import { SearchInput } from '@/app/(homepage)/_components/search-input';
+//import { SearchInput } from '@/app/(homepage)/_components/search-input';
 
 export const Navbar = () => {
   const [showFavorites, setShowFavorites] = useState(false);
@@ -39,9 +39,8 @@ export const Navbar = () => {
         </div>
 
         <div className="flex items-center pr-8 gap-2">
-          <SearchIcon className="h-[3rem] w-[3rem] text-white" />
-          <SearchInput />
-
+          {/* <SearchInput />
+          <SearchIcon className="h-[2.5rem] w-[2.5rem] text-white -ml-11" /> */}
           <UploadPictureModal />
           <UserButton />
         </div>

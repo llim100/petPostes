@@ -5,24 +5,31 @@ import { SquareArrowRight, ThumbsUp, Heart } from 'lucide-react';
 import { FileWithUrls } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
 import { Toggle } from '@/components/ui/toggle';
-import { useMutation } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface PictureCardProps {
   file: FileWithUrls;
 }
 
 export const PictureCard = ({ file }: PictureCardProps) => {
+  const id = file?._id;
   const timeAgo = formatDistanceToNow(file._creationTime);
   const favorite = useMutation(api.pictures.favorite);
   const unfavorite = useMutation(api.pictures.unfavorite);
+  const isLiked = useQuery(api.pictures.getLike, { id: file?._id });
+  const liked = useMutation(api.pictures.like);
   const handleChange = () => {
     if (file.favorite) {
-      unfavorite({ id: file._id });
+      unfavorite({ id });
     } else {
-      favorite({ id: file._id });
+      favorite({ id });
     }
+  };
+  const handlelike = () => {
+    liked({ id });
   };
   return (
     <div
@@ -77,14 +84,13 @@ export const PictureCard = ({ file }: PictureCardProps) => {
               <p>{timeAgo} ago</p>
             </p>
           </div>
-          <div className="flex flex-col">
-            <ThumbsUp className="p-1 h-6 w-6" />
+          <button
+            className="transform transition hover:scale-125 active:scale-150 ml-10"
+            onClick={handlelike}
+          >
+            <ThumbsUp className="cn('text-white p-1 h-6 w-6', isLiked && 'fill-red-600')" />
             <p className=" text-muted-foreground text-xs">{file.likeCount} </p>
-          </div>
-
-          {/* <Toggle variant="outline" size="sm" onPressedChange={handleChange}>
-            <Heart />
-          </Toggle> */}
+          </button>
         </div>
       </div>
     </div>

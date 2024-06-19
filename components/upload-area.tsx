@@ -1,12 +1,22 @@
 'use client';
 
 import { useMutation } from 'convex/react';
-import { UploadDropzone, UploadFileResponse } from '@xixixao/uploadstuff/react';
+import { UploadButton, UploadFileResponse } from '@xixixao/uploadstuff/react';
 import '@xixixao/uploadstuff/react/styles.css';
 import { api } from '../convex/_generated/api';
 import { useState } from 'react';
 import { Id } from '@/convex/_generated/dataModel';
 import { useRouter } from 'next/navigation';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Value } from '@radix-ui/react-select';
 
 export function UploadArea() {
   const [picId, setPicId] = useState<Id<'pictures'> | null>(null);
@@ -31,10 +41,10 @@ export function UploadArea() {
       title,
       category,
     });
+    router.push(`/petposte?q=${title}`);
     setPicId(id);
     setTitle('');
     setCategory('');
-    // router.push('/petposte');
   };
 
   return (
@@ -65,14 +75,28 @@ export function UploadArea() {
             >
               Enter the pet category
             </label>
-            <input
+            <Select onValueChange={(value) => setCategory(value)}>
+              <SelectTrigger className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-200">
+                <SelectValue placeholder="Select a pet category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Category</SelectLabel>
+                  <SelectItem value="dogs">dogs</SelectItem>
+                  <SelectItem value="cats">cats</SelectItem>
+                  <SelectItem value="others">others</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            {/* <input
               id="title"
               type="text"
               placeholder="Enter picture category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-200"
-            />
+            /> */}
           </div>
           <div className="mb-4">
             <label
@@ -81,7 +105,17 @@ export function UploadArea() {
             >
               Upload the pet image
             </label>
-            <UploadDropzone
+            <UploadButton
+              uploadUrl={generateUploadUrl}
+              fileTypes={['.pdf', 'image/*']}
+              multiple
+              onUploadComplete={savePictureAfterUpload}
+              onUploadError={(error: unknown) => {
+                // Do something with the error.
+                alert(`ERROR! ${error}`);
+              }}
+            />
+            {/* <UploadDropzone
               uploadUrl={generateUploadUrl}
               fileTypes={{
                 'image/*': ['.png', '.gif', '.jpeg', '.jpg'],
@@ -90,7 +124,7 @@ export function UploadArea() {
               onUploadError={(error) => {
                 alert(`ERROR! ${error}`);
               }}
-            />
+            /> */}
           </div>
         </div>
       )}

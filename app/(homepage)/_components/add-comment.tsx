@@ -77,13 +77,15 @@ export const AddComment = ({ pictureId }: EditTitleDialogProps) => {
         </div>
 
         <DialogFooter>
-          <Button
-            onClick={handleAdd}
-            onKeyDown={handleKeyDown}
-            variant="secondary"
-          >
-            Add
-          </Button>
+          <DialogClose asChild>
+            <Button
+              onClick={handleAdd}
+              onKeyDown={handleKeyDown}
+              variant="secondary"
+            >
+              Add
+            </Button>
+          </DialogClose>
           <DialogClose asChild>
             <Button type="button" variant="secondary">
               Close

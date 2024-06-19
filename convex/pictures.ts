@@ -1,6 +1,7 @@
 import { ConvexError, v } from 'convex/values';
 import { mutation, query } from './_generated/server';
 import { FileWithUrls } from '../types/index';
+import { paginationOptsValidator } from 'convex/server';
 import {
   getOneFromOrThrow,
   getOneFrom,
@@ -8,91 +9,64 @@ import {
   getManyFrom,
 } from 'convex-helpers/server/relationships';
 
+import { asyncMap } from 'convex-helpers';
+
 export const list = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new ConvexError('Unauthorized');
 
-    const pictures = await ctx.db.query('pictures').collect();
+    const pictures = await ctx.db.query('pictures').order('desc').take(20);
 
-    return Promise.all(
-      pictures.map(async (picture) => {
-        const pictureUrl =
-          (await ctx.storage.getUrl(picture.picStorageId)) ?? '';
-        // let imageUrl: string | null = null;
+    return await asyncMap(pictures, async (picture) => {
+      const pictureUrl = (await ctx.storage.getUrl(picture.picStorageId)) ?? '';
 
-        // const user = await ctx.db
-        //   .query('users')
-        //   .withIndex('by_token', (q) =>
-        //     q.eq('tokenIdentifier', identity.tokenIdentifier)
-        //   )
-        //   .unique();
+      const owner = await ctx.db.get(picture.ownerId);
 
-        // if (user === null) {
-        //   throw new ConvexError("User doesn't exist in the database");
-        // }
+      if (owner === null) {
+        throw new ConvexError("User doesn't exist in the database");
+      }
 
-        const owner = await ctx.db.get(picture.ownerId);
+      const user = await getOneFrom(
+        ctx.db,
+        'users',
+        'by_token',
+        identity.tokenIdentifier,
+        'tokenIdentifier'
+      );
+      if (user === null) {
+        throw new ConvexError("User doesn't exist in the database");
+      }
 
-        if (owner === null) {
-          throw new ConvexError("User doesn't exist in the database");
-        }
+      const existingFavorite = await ctx.db
+        .query('userFavorites')
+        .withIndex('by_userId_pictureId', (q) =>
+          q.eq('userId', user._id).eq('pictureId', picture._id)
+        )
+        .unique();
 
-        const user = await getOneFrom(
-          ctx.db,
-          'users',
-          'by_token',
-          identity.tokenIdentifier,
-          'tokenIdentifier'
-        );
-        if (user === null) {
-          throw new ConvexError("User doesn't exist in the database");
-        }
+      const isOwner = user?._id === owner._id;
 
-        const existingFavorite = await ctx.db
-          .query('userFavorites')
-          .withIndex('by_userId_pictureId', (q) =>
-            q.eq('userId', user._id).eq('pictureId', picture._id)
-          )
-          .unique();
+      const likes = await getManyFrom(
+        ctx.db,
+        'likes',
+        'by_pictureId',
+        picture._id,
+        'pictureId'
+      );
 
-        // const usersFavorites = await getManyVia(
-        //   ctx.db,
-        //   'userFavorites',
-        //   'userId',
-        //   'by_pictureId',
-        //   picture._id
-        // );
+      const likeCount = likes.length;
 
-        // const owner = await ctx.db.get(picture.ownerId);
-        const isOwner = user?._id === owner._id;
-
-        // const likes = await ctx.db
-        //   .query('likes')
-        //   .withIndex('by_pictureId', (q) => q.eq('pictureId', picture._id))
-        //   .collect();
-
-        const likes = await getManyFrom(
-          ctx.db,
-          'likes',
-          'by_pictureId',
-          picture._id,
-          'pictureId'
-        );
-
-        const likeCount = likes.length;
-
-        return {
-          ...picture,
-          pictureUrl,
-          owner,
-          isOwner,
-          favorite: existingFavorite ? true : false,
-          likeCount,
-        } as FileWithUrls;
-      })
-    );
+      return {
+        ...picture,
+        pictureUrl,
+        owner,
+        isOwner,
+        favorite: existingFavorite ? true : false,
+        likeCount,
+      } as FileWithUrls;
+    });
   },
 });
 
@@ -168,7 +142,7 @@ export const savePictureStorageId = mutation({
   args: {
     picStorageId: v.id('_storage'),
     title: v.string(),
-    category: v.string(),
+    category: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -416,11 +390,13 @@ export const like = mutation({
 
     if (liked) {
       await ctx.db.delete(liked._id);
+      return picture;
     } else {
       await ctx.db.insert('likes', {
         pictureId: args.id,
         userId: user._id,
       });
+      return picture;
     }
   },
 });
@@ -453,12 +429,132 @@ export const updateTitle = mutation({
 });
 
 export const search = query({
-  args: { search: v.optional(v.string()) },
-  async handler({ db }, { search }) {
-    const results = db
+  args: {
+    paginationOpts: paginationOptsValidator,
+    search: v.optional(v.string()),
+  },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError('Unauthorized');
+
+    // if (args.search === undefined || args.search === '') {
+    //   const pictures = await ctx.db
+    //     .query('pictures')
+    //     .paginate(args.paginationOpts);
+    // } else {
+    //   const pictures = await ctx.db
+    //     .query('pictures')
+    //     .withSearchIndex('search_title', (q) =>
+    //       q.search('title', args.search || '')
+    //     )
+    //     .paginate(args.paginationOpts);
+    // }
+
+    const pictures = await ctx.db
       .query('pictures')
-      .withSearchIndex('search_title', (q) => q.search('title', search || ''))
-      .take(10);
-    return results;
+      .withSearchIndex('search_title', (q) =>
+        q.search('title', args.search || '')
+      )
+      .paginate(args.paginationOpts);
+
+    const pictureDetails = await asyncMap(pictures.page, async (picture) => {
+      const pictureUrl = (await ctx.storage.getUrl(picture.picStorageId)) ?? '';
+
+      const owner = await ctx.db.get(picture.ownerId);
+
+      if (owner === null) {
+        throw new ConvexError("User doesn't exist in the database");
+      }
+
+      const user = await getOneFrom(
+        ctx.db,
+        'users',
+        'by_token',
+        identity.tokenIdentifier,
+        'tokenIdentifier'
+      );
+      if (user === null) {
+        throw new ConvexError("User doesn't exist in the database");
+      }
+
+      const existingFavorite = await ctx.db
+        .query('userFavorites')
+        .withIndex('by_userId_pictureId', (q) =>
+          q.eq('userId', user._id).eq('pictureId', picture._id)
+        )
+        .unique();
+
+      const isOwner = user?._id === owner._id;
+
+      const likes = await getManyFrom(
+        ctx.db,
+        'likes',
+        'by_pictureId',
+        picture._id,
+        'pictureId'
+      );
+      const likeCount = likes.length;
+
+      return {
+        ...picture,
+        pictureUrl,
+        owner,
+        isOwner,
+        favorite: existingFavorite ? true : false,
+        likeCount,
+      } as FileWithUrls;
+    });
+
+    return { ...pictures, page: pictureDetails };
   },
 });
+
+//     return Promise.all(
+//       pictures.map(async (picture) => {
+//         const pictureUrl =
+//           (await ctx.storage.getUrl(picture.picStorageId)) ?? '';
+//         const owner = await ctx.db.get(picture.ownerId);
+
+//         if (owner === null) {
+//           throw new ConvexError("User doesn't exist in the database");
+//         }
+//         const user = await getOneFrom(
+//           ctx.db,
+//           'users',
+//           'by_token',
+//           identity.tokenIdentifier,
+//           'tokenIdentifier'
+//         );
+//         if (user === null) {
+//           throw new ConvexError("User doesn't exist in the database");
+//         }
+
+//         const existingFavorite = await ctx.db
+//           .query('userFavorites')
+//           .withIndex('by_userId_pictureId', (q) =>
+//             q.eq('userId', user._id).eq('pictureId', picture._id)
+//           )
+//           .unique();
+//         const isOwner = user?._id === owner._id;
+//         const likes = await getManyFrom(
+//           ctx.db,
+//           'likes',
+//           'by_pictureId',
+//           picture._id,
+//           'pictureId'
+//         );
+
+//         const likeCount = likes.length;
+
+//         return {
+//           ...picture,
+//           pictureUrl,
+//           owner,
+//           isOwner,
+//           favorite: existingFavorite ? true : false,
+//           likeCount,
+//         } as FileWithUrls;
+//       })
+//     );
+//   },
+// });

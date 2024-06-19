@@ -23,6 +23,7 @@ import { TrashDialog } from '../_components/trash-dialog';
 import { EditTitle } from '../_components/edit-title';
 //import {Comments} from '../_components/comments';
 import { Comments } from '../_components/comments';
+import { Button } from '@/components/ui/button';
 
 import { FileWithUrls } from '@/types';
 import { AddComment } from '../_components/add-comment';
@@ -73,7 +74,7 @@ const EditPost = ({ params }: EditPostProps) => {
           <div className="flex w-full justify-between px-8">
             <h1 className="text-4xl font-bold mb-8">Edit this post</h1>
 
-            <Link href="/petposte" className="pr-10">
+            {/* <Link href="/petposte" className="pr-10">
               <Hint
                 label="back to main screen"
                 side="top"
@@ -82,7 +83,17 @@ const EditPost = ({ params }: EditPostProps) => {
               >
                 <ArrowBigLeft className="text-white h-10 w-10" />
               </Hint>
-            </Link>
+            </Link> */}
+            <Button onClick={() => router.back()} className="pr-10">
+              <Hint
+                label="back to main screen"
+                side="top"
+                align="center"
+                sideOffset={5}
+              >
+                <ArrowBigLeft className="text-white h-10 w-10" />
+              </Hint>
+            </Button>
           </div>
           <div
             className="h-3/6 min-w-fit bg-gray-800 rounded-lg shadow-md overflow-hidden hover:bg-gray-700 

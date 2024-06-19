@@ -10,13 +10,16 @@ export default defineSchema({
   }).index('by_token', ['tokenIdentifier']),
   pictures: defineTable({
     title: v.string(),
-    category: v.string(),
+    category: v.optional(v.string()),
     picStorageId: v.id('_storage'),
     ownerId: v.id('users'),
   })
     .index('by_ownerId', ['ownerId'])
     .index('by_category', ['category'])
-    .searchIndex('search_title', { searchField: 'title' }),
+    .searchIndex('search_title', {
+      searchField: 'title',
+      filterFields: ['category'],
+    }),
   comments: defineTable({
     pictureId: v.id('pictures'),
     content: v.string(),

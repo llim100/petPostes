@@ -4,11 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
 
-export const SearchInput = () => {
-  const [search, setSearch] = useState<string>();
+interface SearchInputProps {
+  defaultValue: string;
+}
+
+export const SearchInput = ({ defaultValue = '' }: SearchInputProps) => {
+  const [search, setSearch] = useState<string>(defaultValue);
   const router = useRouter();
 
   const handleInputChange = async (
@@ -17,18 +19,23 @@ export const SearchInput = () => {
     setSearch(event.target?.value);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault;
+
+      router.push(`/petposte?q=${search}`);
+      setSearch('');
+    }
+  };
+
   return (
     <Button variant="default" asChild>
       <Input
-        className="rounded-full border-0 bg-slate-800 max-w-sm lg:max-w-lg md:max-w-sm sm:max-w-[250px]"
+        className="rounded-full border-0 bg-slate-800 max-w-sm lg:max-w-xlg md:max-w-md sm:max-w-[300px]"
         placeholder="Search"
         type="search"
-        value={search ?? ''}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            router.push(`/petposte?q=${search}`);
-          }
-        }}
+        value={search}
+        onKeyDown={handleKeyDown}
         onChange={handleInputChange}
       ></Input>
     </Button>
