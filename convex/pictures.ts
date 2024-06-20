@@ -431,30 +431,15 @@ export const updateTitle = mutation({
 export const search = query({
   args: {
     paginationOpts: paginationOptsValidator,
-    search: v.optional(v.string()),
+    search: v.string(),
   },
   async handler(ctx, args) {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new ConvexError('Unauthorized');
 
-    // if (args.search === undefined || args.search === '') {
-    //   const pictures = await ctx.db
-    //     .query('pictures')
-    //     .paginate(args.paginationOpts);
-    // } else {
-    //   const pictures = await ctx.db
-    //     .query('pictures')
-    //     .withSearchIndex('search_title', (q) =>
-    //       q.search('title', args.search || '')
-    //     )
-    //     .paginate(args.paginationOpts);
-    // }
-
     const pictures = await ctx.db
       .query('pictures')
-      .withSearchIndex('search_title', (q) =>
-        q.search('title', args.search || '')
-      )
+      .withSearchIndex('search_title', (q) => q.search('title', args?.search))
       .paginate(args.paginationOpts);
 
     const pictureDetails = await asyncMap(pictures.page, async (picture) => {

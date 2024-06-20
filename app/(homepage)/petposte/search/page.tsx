@@ -9,7 +9,7 @@ import { Id } from '@/convex/_generated/dataModel';
 import { cn } from '@/lib/utils';
 import { Hint } from '@/components/hint';
 import { Button } from '@/components/ui/button';
-import { PictureCard } from '../_components/pictureCard';
+import { PictureCard } from '../../_components/pictureCard';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { SearchInput } from '@/app/(homepage)/_components/search-input';
@@ -20,20 +20,20 @@ interface HomePageProps {
   };
 }
 
-const Home = ({ searchParams: { q = '' } }: HomePageProps) => {
+const SearchHome = ({ searchParams: { q = '' } }: HomePageProps) => {
   const searchParams = useSearchParams();
   const search = searchParams.get('q');
   const store = useMutation(api.users.store);
-  const pictureList = useQuery(api.pictures.list);
-  // const {
-  //   results: list,
-  //   status,
-  //   loadMore,
-  // } = usePaginatedQuery(
-  //   api.pictures.search,
-  //   { search: q as string },
-  //   { initialNumItems: 2 }
-  // );
+  //const pictureList = useQuery(api.pictures.list);
+  const {
+    results: list,
+    status,
+    loadMore,
+  } = usePaginatedQuery(
+    api.pictures.search,
+    { search: q as string },
+    { initialNumItems: 2 }
+  );
 
   const [showFavorites, setShowFavorites] = useState(false);
   const router = useRouter();
@@ -42,11 +42,11 @@ const Home = ({ searchParams: { q = '' } }: HomePageProps) => {
     store({});
   }, [store]);
 
-  if (pictureList === undefined) {
+  if (list === undefined) {
     return <div>Loading ...</div>;
   }
 
-  if (pictureList === null) {
+  if (list === null) {
     router.push('/');
   }
 
@@ -54,9 +54,9 @@ const Home = ({ searchParams: { q = '' } }: HomePageProps) => {
     setShowFavorites(!showFavorites);
   };
 
-  const filteredPictureList = showFavorites
-    ? pictureList?.filter((file) => file.favorite)
-    : pictureList;
+  // const filteredPictureList = showFavorites
+  //   ? pictureList?.filter((file) => file.favorite)
+  //   : pictureList;
 
   return (
     <div className="min-h-full bg-gradient-to-br from-slate-900 to-slate-900 text-white">
@@ -85,12 +85,10 @@ const Home = ({ searchParams: { q = '' } }: HomePageProps) => {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {pictureList?.map((file) => (
-            <PictureCard key={file._id} file={file} />
-          ))}
+          {list?.map((file) => <PictureCard key={file._id} file={file} />)}
         </div>
       </div>
-      {/* <div className="footer flex m-auto justify-center">
+      <div className="footer flex m-auto justify-center">
         <Button
           className={cn('text-white', status !== 'CanLoadMore' && 'invisible')}
           onClick={() => {
@@ -100,9 +98,9 @@ const Home = ({ searchParams: { q = '' } }: HomePageProps) => {
         >
           Load More
         </Button>
-      </div> */}
+      </div>
     </div>
   );
 };
 
-export default Home;
+export default SearchHome;

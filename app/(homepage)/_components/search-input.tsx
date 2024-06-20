@@ -23,7 +23,7 @@ export const SearchInput = ({ defaultValue = '' }: SearchInputProps) => {
     if (event.key === 'Enter') {
       event.preventDefault;
 
-      router.push(`/petposte?q=${search}`);
+      router.push(`/petposte/search?q=${search}`);
       setSearch('');
     }
   };
