@@ -20,7 +20,7 @@ interface HomePageProps {
   };
 }
 
-const SearchHome = ({ searchParams: { q = '' } }: HomePageProps) => {
+const SearchHome = ({ searchParams: { q } }: HomePageProps) => {
   const searchParams = useSearchParams();
   const search = searchParams.get('q');
   const store = useMutation(api.users.store);
@@ -31,7 +31,7 @@ const SearchHome = ({ searchParams: { q = '' } }: HomePageProps) => {
     loadMore,
   } = usePaginatedQuery(
     api.pictures.search,
-    { search: q as string },
+    { search: search as string },
     { initialNumItems: 2 }
   );
 
