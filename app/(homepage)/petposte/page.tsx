@@ -14,15 +14,15 @@ import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { SearchInput } from '@/app/(homepage)/_components/search-input';
 
-interface HomePageProps {
-  searchParams: {
-    q?: string;
-  };
-}
+// interface HomePageProps {
+//   searchParams: {
+//     q?: string;
+//   };
+// }
 
-const Home = ({ searchParams: { q = '' } }: HomePageProps) => {
-  const searchParams = useSearchParams();
-  const search = searchParams.get('q');
+const Home = () => {
+  //const searchParams = useSearchParams();
+  //const search = searchParams.get('q');
   const store = useMutation(api.users.store);
   const pictureList = useQuery(api.pictures.list);
   // const {

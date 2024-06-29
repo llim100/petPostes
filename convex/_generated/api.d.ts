@@ -17,6 +17,7 @@ import type {
 import type * as comments from "../comments.js";
 import type * as helpers from "../helpers.js";
 import type * as pictures from "../pictures.js";
+import type * as test from "../test.js";
 import type * as users from "../users.js";
 
 /**
@@ -31,6 +32,7 @@ declare const fullApi: ApiFromModules<{
   comments: typeof comments;
   helpers: typeof helpers;
   pictures: typeof pictures;
+  test: typeof test;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

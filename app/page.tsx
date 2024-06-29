@@ -1,8 +1,9 @@
-'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const LandingPage = () => {
+export const dynamic = 'force-dynamic';
+
+const LandingPage = async () => {
   return (
     <div className="bg-transparent">
       <div className="relative  -z-10 min-h-fit w-full">
@@ -15,6 +16,7 @@ const LandingPage = () => {
           />
         </div>
       </div>
+
       <div className="mx-auto pt-36 w-full py-8 min-h-fit">
         <div className="text-center">
           <Image

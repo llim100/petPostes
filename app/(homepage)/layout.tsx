@@ -1,5 +1,3 @@
-'use client';
-
 import { Navbar } from '@/components/navbar';
 import { Spinner } from '@/components/spinner';
 // import { useConvexAuth } from "convex/react";

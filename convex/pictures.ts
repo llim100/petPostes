@@ -15,7 +15,7 @@ export const list = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError('Unauthorized');
+    if (identity === null) throw new ConvexError('Unauthorized');
 
     const pictures = await ctx.db.query('pictures').order('desc').take(20);
 

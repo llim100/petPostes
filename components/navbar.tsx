@@ -1,17 +1,23 @@
 'use client';
-import { UserButton } from '@clerk/clerk-react';
+import { UserButton, SignInButton } from '@clerk/clerk-react';
 import Link from 'next/link';
 import { UploadPictureModal } from '@/app/(homepage)/_components/upload-picture-modal';
 import { HeartPulse, SearchIcon } from 'lucide-react';
 import { Hint } from './hint';
 import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState, ChangeEvent } from 'react';
+// import { auth } from '@clerk/nextjs/server';
+// import { redirect } from 'next/navigation';
+//import { useState, ChangeEvent } from 'react';
 
 //import { SearchInput } from '@/app/(homepage)/_components/search-input';
 
 export const Navbar = () => {
-  const [showFavorites, setShowFavorites] = useState(false);
+  //  const [showFavorites, setShowFavorites] = useState(false);
+  // const { userId } = auth();
+  // if (!userId) {
+  //   return <SignInButton mode="modal" />;
+  // }
 
   return (
     <nav className="bg-slate-950 py-4">
